@@ -1,6 +1,6 @@
-# SimpleBooks --- Features and Process Documentation
+# LiteBooks --- Features and Process Documentation
 
-This document explains SimpleBooks in everyday business language. It
+This document explains LiteBooks in everyday business language. It
 describes what the system is intended to do, how users will work with
 it, and how common business activities move through inventory and
 accounting.
@@ -8,9 +8,9 @@ accounting.
 It is a living document. Features described as planned are not
 necessarily implemented yet.
 
-## 1. What is SimpleBooks?
+## 1. What is LiteBooks?
 
-SimpleBooks is an application for managing a small business's inventory
+LiteBooks is an application for managing a small business's inventory
 and basic accounting records.
 
 It brings together three connected questions:
@@ -43,7 +43,7 @@ are possible future enhancements.
 
 ### 3.1 Account Management
 
-Purpose: provide a secure way for a person to access SimpleBooks.
+Purpose: provide a secure way for a person to access LiteBooks.
 
 Planned capabilities: - Register an account. - Sign in and sign out. -
 Manage basic profile information. - Recover access through the supported
@@ -248,12 +248,12 @@ calculated inventory records.
 ## 4. Everyday process flows
 
 The following examples explain how a user is expected to work in
-SimpleBooks. Exact screen layouts and some detailed rules will be
+LiteBooks. Exact screen layouts and some detailed rules will be
 finalized during implementation.
 
 ### 4.1 First-time setup
 
-1.  The user registers for a SimpleBooks account.
+1.  The user registers for a LiteBooks account.
 2.  The user signs in.
 3.  The user creates a company and enters its basic details.
 4.  The system prepares the company's initial setup, including its Chart
@@ -264,14 +264,14 @@ finalized during implementation.
     and its starting cost.
 8.  The user can then begin recording purchases, sales, and expenses.
 
-**In plain language:** first tell SimpleBooks who you are, then which
+**In plain language:** first tell LiteBooks who you are, then which
 business you are managing, then what that business sells or stores.
 
 ### 4.2 Switching companies
 
 1.  The user signs in.
 2.  The user selects a company from the company switcher.
-3.  SimpleBooks loads the selected company's products, contacts,
+3.  LiteBooks loads the selected company's products, contacts,
     transactions, and reports.
 4.  If the user switches to another company, the business information on
     screen changes to that company's records.
@@ -291,7 +291,7 @@ Example: a company purchases 20 units of a product from a supplier.
 5.  The user saves the purchase as a draft if it is not ready to
     confirm.
 6.  When the details are correct, the user posts the purchase.
-7.  SimpleBooks records the purchase and creates an incoming inventory
+7.  LiteBooks records the purchase and creates an incoming inventory
     movement.
 8.  The inventory quantity and weighted average cost are updated.
 9.  The accounting records are generated.
@@ -308,10 +308,10 @@ Example: a company sells 5 units of a product to a customer.
 1.  The user opens Sales or Transactions.
 2.  The user selects the customer.
 3.  The user adds the product and quantity.
-4.  SimpleBooks checks whether sufficient stock is available.
+4.  LiteBooks checks whether sufficient stock is available.
 5.  The user reviews the price, discount, and tax.
 6.  The user saves a draft or posts the sale.
-7.  When posted, SimpleBooks records the sale and creates an outgoing
+7.  When posted, LiteBooks records the sale and creates an outgoing
     inventory movement.
 8.  The system calculates the cost of the goods sold using the
     applicable inventory cost.
@@ -332,7 +332,7 @@ Example: the company pays ₱2,000 for an internet bill.
 4.  The user enters the amount and date.
 5.  The user saves or posts the expense.
 6.  If paid, the user records the payment account and method.
-7.  SimpleBooks records the expense in the accounting records.
+7.  LiteBooks records the expense in the accounting records.
 
 **Result:** the expense appears in the company's financial activity. It
 does not change product stock unless the transaction is specifically
@@ -344,7 +344,7 @@ recorded as an inventory purchase.
 2.  The user chooses to record a payment.
 3.  The user enters the payment date, amount, method, and cash or bank
     account.
-4.  SimpleBooks records the payment.
+4.  LiteBooks records the payment.
 5.  The amount paid is added to the payments already recorded for that
     transaction.
 6.  The remaining amount due is recalculated.
@@ -355,14 +355,14 @@ remaining balance is ₱6,000. When the customer pays the remaining
 
 ### 4.7 Recording opening stock
 
-When a business starts using SimpleBooks, it may already have products
+When a business starts using LiteBooks, it may already have products
 in its storage area.
 
 1.  The user creates the product records.
 2.  The user enters the quantity currently on hand.
 3.  The user enters the appropriate starting unit cost.
 4.  The user records an opening-stock movement.
-5.  SimpleBooks includes the opening quantity and value in inventory
+5.  LiteBooks includes the opening quantity and value in inventory
     records.
 6.  The corresponding opening accounting balance must be established as
     part of the company's accounting setup.
@@ -379,7 +379,7 @@ Suppose the system shows 50 units, but a physical count finds only 48.
 3.  The user records an adjustment of 2 units out.
 4.  The user enters a reason, such as damage, loss, or counting
     correction.
-5.  SimpleBooks records the adjustment and its financial effect.
+5.  LiteBooks records the adjustment and its financial effect.
 
 **Result:** the inventory record reflects the verified stock count,
 while the adjustment history remains available for review.

@@ -1,6 +1,6 @@
-# SimpleBooks
+# LiteBooks
 
-SimpleBooks is a lightweight, multi-company Inventory and Accounting
+LiteBooks is a lightweight, multi-company Inventory and Accounting
 Management System. It is being developed to help small businesses
 organize their products, monitor stock, record everyday business
 transactions, and understand their financial position without the
@@ -11,7 +11,7 @@ TypeScript, FastAPI, and Supabase**.
 
 ## Project goals
 
-SimpleBooks aims to provide a straightforward place to:
+LiteBooks aims to provide a straightforward place to:
 
 -   Maintain product, category, and unit-of-measure records.
 -   Track inventory coming in and going out.
@@ -23,7 +23,7 @@ SimpleBooks aims to provide a straightforward place to:
 -   Manage more than one company under a single user account.
 
 The initial focus is on reliable inventory records and understandable
-financial reporting. SimpleBooks is not intended to reproduce every
+financial reporting. LiteBooks is not intended to reproduce every
 feature of a full enterprise accounting suite.
 
 ## Planned modules
@@ -192,7 +192,7 @@ Exact package versions may change as the project evolves.
 
 ``` bash
 git clone <your-repository-url>
-cd simplebooks
+cd LiteBooks
 ```
 
 ### 2. Set up the frontend
@@ -282,7 +282,7 @@ applying it to a shared or production database.
 The main project structure is expected to follow this arrangement:
 
 ``` text
-simplebooks/
+LiteBooks/
 ├── backend/
 │   ├── app/
 │   │   ├── api/
@@ -325,6 +325,6 @@ activities move through the system.
 
 ## Project direction
 
-SimpleBooks will be developed incrementally. The priority is to make
+LiteBooks will be developed incrementally. The priority is to make
 core workflows dependable and easy to understand before adding advanced
 accounting, automation, or collaboration features.

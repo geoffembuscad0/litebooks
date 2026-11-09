@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 app = FastAPI(
-    title="SimpleBooks API",
+    title="LiteBooks API",
     description="Inventory and Accounting Management System",
     version="0.1.0",
 )
@@ -10,7 +10,7 @@ app = FastAPI(
 @app.get("/")
 def root():
     return {
-        "message": "Welcome to SimpleBooks API",
+        "message": "Welcome to LiteBooks API",
         "status": "running",
     }
 
