@@ -1,184 +1,54 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
-
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-}
-
-.hero {
-  position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
-}
-
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
-}
-
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
-}
-
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-}
-
-#next-steps ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
-}
-
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
-}
-
-.ticks {
-  position: relative;
-  width: 100%;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
-
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
-}
+:root { --green: #16794c; --green-dark: #105d3a; --ink: #17231f; --muted: #748078; --line: #e3e9e4; }
+.auth-shell { min-height: 100vh; display: grid; place-items: center; padding: 32px 18px; background: radial-gradient(ellipse at 12% 10%, #e5f2e9 0, transparent 38%), #f5f7f5; }
+.auth-card, .onboarding-card { width: min(100%, 490px); padding: 42px; border: 1px solid var(--line); border-radius: 20px; background: white; box-shadow: 0 16px 50px #253c2b0d; }
+.brand { display: inline-flex; gap: 5px; align-items: center; color: var(--green); text-decoration: none; font: 800 17px 'Manrope', sans-serif; letter-spacing: 1px; }
+.brand span { color: #20342a; }
+.auth-card .brand { margin-bottom: 38px; }
+.eyebrow, .step-badge { color: var(--green); font-size: 11px; font-weight: 700; letter-spacing: 1.3px; margin: 0 0 10px; }
+h1, h2 { font-family: 'Manrope', sans-serif; color: var(--ink); }
+.auth-card h1, .onboarding-card h1, .company-content h1, .workspace-card h1 { margin: 0 0 9px; font-size: clamp(28px, 4vw, 36px); letter-spacing: -1.2px; }
+.muted { color: var(--muted); line-height: 1.6; margin: 0 0 26px; font-size: 14px; }
+.form-stack { display: grid; gap: 17px; margin-top: 24px; }
+.form-stack label { display: grid; gap: 7px; color: #34443b; font-size: 13px; font-weight: 600; }
+.form-stack input, .form-stack select { width: 100%; min-height: 46px; padding: 10px 12px; color: var(--ink); background: white; border: 1px solid #dce4dd; border-radius: 8px; outline: none; }
+.form-stack input:focus, .form-stack select:focus { border-color: var(--green); box-shadow: 0 0 0 3px #16794c1c; }
+.button { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; border: 1px solid transparent; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; cursor: pointer; transition: .15s ease; }
+.button:disabled { opacity: .6; cursor: wait; }
+.primary { color: white; background: var(--green); }
+.primary:hover:not(:disabled) { background: var(--green-dark); }
+.full { width: 100%; margin-top: 4px; }
+.secondary { background: white; color: var(--green); border-color: #cddbd1; }
+.secondary:hover { background: #f3f8f4; }
+.form-footer { text-align: center; margin: 24px 0 0; color: var(--muted); font-size: 13px; }
+.form-footer a, .alert a { color: var(--green); font-weight: 700; }
+.alert { padding: 12px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5; margin-top: 18px; }
+.error { color: #9c2929; border: 1px solid #f1caca; background: #fff6f5; }
+.success { color: #17613c; border: 1px solid #cbe8d5; background: #f3fbf5; }
+.onboarding-shell, .company-shell, .workspace-shell { min-height: 100vh; background: #f7f9f7; }
+.topbar { height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 max(24px, calc((100% - 1120px) / 2)); background: white; border-bottom: 1px solid var(--line); }
+.text-button { border: 0; padding: 8px 0; background: transparent; color: #59675f; cursor: pointer; font-size: 13px; font-weight: 600; }
+.text-button:hover { color: var(--green); }
+.onboarding-card { margin: 56px auto; width: min(100% - 36px, 680px); padding: 38px 42px; }
+.onboarding-card .muted { max-width: 550px; margin-bottom: 20px; }
+.step-badge { margin-bottom: 14px; }
+.two-column { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 22px; }
+.span-two { grid-column: 1 / -1; }
+.helper { color: var(--muted); font-size: 12px; line-height: 1.5; margin: 0; }
+.company-content { width: min(100% - 40px, 1000px); margin: 76px auto; }
+.company-content h1 { font-size: 38px; }
+.company-content .muted { margin-bottom: 34px; }
+.user-actions { display: flex; align-items: center; gap: 22px; color: var(--muted); font-size: 13px; }
+.company-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.company-card { min-height: 108px; display: flex; align-items: center; gap: 15px; padding: 20px; background: white; border: 1px solid var(--line); border-radius: 12px; text-decoration: none; transition: .15s ease; }
+.company-card:hover { border-color: #9dc9ac; box-shadow: 0 7px 20px #1c56300d; transform: translateY(-1px); }
+.company-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; color: var(--green); background: #eaf5ed; font: 700 18px 'Manrope', sans-serif; }
+.company-info { flex: 1; min-width: 0; }
+.company-info h2 { margin: 0 0 5px; font-size: 15px; }
+.company-info p { margin: 0; color: var(--muted); font-size: 12px; }
+.arrow { color: var(--green); font-size: 22px; }
+.add-company { margin-top: 22px; }
+.workspace-card { max-width: 800px; margin: 70px auto; padding: 38px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+.notice { margin: 26px 0; padding: 16px; color: #41554a; background: #f1f7f2; border-radius: 9px; font-size: 14px; }
+.screen-state, .center-shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; color: var(--muted); }
+.center-shell .alert { max-width: 500px; }
+@media (max-width: 600px) { .auth-card { padding: 30px 24px; } .onboarding-card { margin: 24px auto; padding: 28px 22px; } .two-column { grid-template-columns: 1fr; } .span-two { grid-column: auto; } .company-content { margin: 48px auto; } .user-actions span { display: none; } .workspace-card { margin: 28px 18px; padding: 26px 22px; } }
