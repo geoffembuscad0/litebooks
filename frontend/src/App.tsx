@@ -7,6 +7,9 @@ import Login from './pages/auth/Login'
 import CompanySetup from './pages/auth/CompanySetup'
 import CompanySelection from './pages/company/CompanySelection'
 import CompanyWorkspace from './pages/company/CompanyWorkspace'
+import CompanySettings from './pages/company/CompanySettings'
+import AccountProfile from './pages/account/AccountProfile'
+import './dashboard.css'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 30_000 } } })
 
@@ -24,7 +27,9 @@ function AppRoutes() {
     <Route element={<RequireAuth />}>
       <Route path="/onboarding" element={<CompanySetup />} />
       <Route path="/company/:companyId" element={<CompanyWorkspace />} />
+      <Route path="/company/:companyId/settings" element={<CompanySettings />} />
       <Route path="/companies" element={<CompanySelection />} />
+      <Route path="/account" element={<AccountProfile />} />
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>

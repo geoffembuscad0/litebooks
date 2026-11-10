@@ -17,12 +17,24 @@ export type Company = {
 
 export type CompanyInput = {
   company_name: string
-  company_code: string
+  company_code?: string
   address?: string
   contact_number?: string
   email?: string
   currency: string
   fiscal_year_start: number
+}
+
+export type DashboardData = {
+  company: Company
+  period_start: string
+  period_end: string
+  sales: number
+  purchases: number
+  expenses: number
+  transaction_count: number
+  active_account_count: number
+  recent_transactions: Array<{ id: string; transaction_number: string; transaction_type: string; transaction_date: string; status: string; total_amount: number }>
 }
 
 export async function apiRequest<T>(path: string, accessToken: string, init?: RequestInit): Promise<T> {
@@ -48,4 +60,12 @@ export const companyService = {
     method: 'POST',
     body: JSON.stringify(company),
   }),
+  update: (token: string, companyId: string, company: Partial<CompanyInput> & { timezone: string }) => apiRequest<Company>(`/api/companies/${companyId}`, token, {
+    method: 'PATCH',
+    body: JSON.stringify(company),
+  }),
+}
+
+export const dashboardService = {
+  get: (token: string, companyId: string) => apiRequest<DashboardData>(`/api/companies/${companyId}/dashboard`, token),
 }
