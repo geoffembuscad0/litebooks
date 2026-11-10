@@ -1,3 +1,7 @@
+ALTER TABLE public.products
+ADD CONSTRAINT products_company_id_id_unique
+UNIQUE (company_id, id);
+
 CREATE TABLE public.transaction_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
