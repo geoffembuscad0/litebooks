@@ -31,11 +31,18 @@ class CompanyCreate(BaseModel):
     @field_validator("company_code")
     @classmethod
     def normalize_company_code(cls, value: str) -> str:
-        return value.strip().upper()
+        return value.upper()
 
     @field_validator("address", "contact_number", mode="before")
     @classmethod
     def normalize_optional_text(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            return value.strip() or None
+        return value
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def normalize_email(cls, value: Any) -> Any:
         if isinstance(value, str):
             return value.strip() or None
         return value
@@ -51,6 +58,7 @@ class CompanyCreate(BaseModel):
 
 class CompanyUpdate(BaseModel):
     company_name: str | None = Field(default=None, min_length=1, max_length=150)
+    company_code: str | None = Field(default=None, min_length=1, max_length=50)
     address: str | None = Field(default=None, max_length=10000)
     contact_number: str | None = Field(default=None, max_length=30)
     email: EmailStr | None = None
@@ -58,9 +66,9 @@ class CompanyUpdate(BaseModel):
     fiscal_year_start: int | None = Field(default=None, ge=1, le=12)
     timezone: str | None = Field(default=None, min_length=1, max_length=100)
 
-    @field_validator("company_name", "timezone")
+    @field_validator("company_name", "company_code", "timezone")
     @classmethod
-    def strip_required_text(cls, value: str | None) -> str | None:
+    def strip_text(cls, value: str | None) -> str | None:
         if value is None:
             return value
         value = value.strip()
@@ -68,9 +76,21 @@ class CompanyUpdate(BaseModel):
             raise ValueError("This field cannot be blank.")
         return value
 
+    @field_validator("company_code")
+    @classmethod
+    def normalize_company_code(cls, value: str | None) -> str | None:
+        return value.upper() if value is not None else None
+
     @field_validator("address", "contact_number", mode="before")
     @classmethod
     def normalize_optional_text(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            return value.strip() or None
+        return value
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def normalize_email(cls, value: Any) -> Any:
         if isinstance(value, str):
             return value.strip() or None
         return value
@@ -117,6 +137,7 @@ def _get_owned_company(client: Any, user_id: str, company_id: UUID) -> dict[str,
         .execute()
     )
     if not result.data:
+        # Do not reveal whether a company exists if it is not owned by this user.
         raise HTTPException(status_code=404, detail="Company not found.")
     return result.data
 
@@ -156,6 +177,7 @@ def update_company(company_id: UUID, payload: CompanyUpdate, auth: CurrentAuth) 
     if not changes:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Provide at least one setting to update.")
     try:
+        # Ownership is checked independently of the company ID supplied by the client.
         _get_owned_company(client, user["id"], company_id)
         result = (
             client.table("companies")
@@ -170,6 +192,9 @@ def update_company(company_id: UUID, payload: CompanyUpdate, auth: CurrentAuth) 
     except HTTPException:
         raise
     except APIError as exc:
+        error_text = str(exc)
+        if getattr(exc, "code", None) == "23505" or "unique_owner_company_code" in error_text or "companies_owner_company_code" in error_text:
+            raise HTTPException(status_code=409, detail="You already use this company code for one of your companies.") from exc
         if getattr(exc, "code", None) == "42501":
             raise HTTPException(status_code=403, detail="You are not allowed to update this company.") from exc
         raise HTTPException(status_code=400, detail="Could not update company settings.") from exc

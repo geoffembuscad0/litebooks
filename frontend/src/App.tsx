@@ -16,7 +16,7 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, sta
 function AuthEntry() {
   const { session, loading } = useAuth()
   if (loading) return <div className="screen-state">Loading LiteBooks…</div>
-  return <Navigate to={session ? '/' : '/login'} replace />
+  return <Navigate to={session ? '/companies' : '/login'} replace />
 }
 
 function AppRoutes() {
