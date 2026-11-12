@@ -22,8 +22,8 @@ export default function CompanyWorkspace() {
 
   return <main className="app-shell">
     <header className="topbar">
-      <Link className="brand" to="/">LITE<span>BOOKS</span></Link>
-      <nav className="top-nav"><Link className="nav-link active" to={`/company/${company.id}`}>Dashboard</Link><Link className="nav-link" to={`/company/${company.id}/settings`}>Company settings</Link></nav>
+      <Link className="brand" to="/companies">LITE<span>BOOKS</span></Link>
+      <nav className="top-nav"><Link className="nav-link active" to={`/company/${company.id}`}>Dashboard</Link><Link className="nav-link" to={`/company/${company.id}/inventory`}>Inventory</Link><Link className="nav-link" to={`/company/${company.id}/contacts`}>Contacts</Link><Link className="nav-link" to={`/company/${company.id}/settings`}>Company settings</Link></nav>
       <div className="user-actions"><Link className="nav-link" to="/account">My profile</Link><Link className="text-button" to="/companies">Switch company</Link><button className="text-button" onClick={() => void signOut()}>Sign out</button></div>
     </header>
     <section className="dashboard-content">
