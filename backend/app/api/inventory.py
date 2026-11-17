@@ -1,5 +1,5 @@
-from datetime import datetime
-from typing import Any
+from datetime import date, datetime
+from typing import Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status
@@ -83,6 +83,36 @@ class ProductCreate(BaseModel):
         return value
 
 
+class ProductUpdate(BaseModel):
+    category_id: UUID | None = None
+    unit_of_measure_id: UUID | None = None
+    sku: str | None = Field(default=None, max_length=100)
+    barcode: str | None = Field(default=None, max_length=100)
+    name: str | None = Field(default=None, min_length=1, max_length=150)
+    description: str | None = Field(default=None, max_length=10000)
+    default_cost: float | None = Field(default=None, ge=0)
+    selling_price: float | None = Field(default=None, ge=0)
+    reorder_level: float | None = Field(default=None, ge=0)
+    is_active: bool | None = None
+
+    @field_validator("name", "sku", "barcode")
+    @classmethod
+    def normalize_optional_text(cls, value: str | None) -> str | None:
+        if value is None:
+            return value
+        value = value.strip()
+        if not value and value is not None:
+            return None
+        return value
+
+    @field_validator("description", mode="before")
+    @classmethod
+    def normalize_description(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            return value.strip() or None
+        return value
+
+
 class InventorySummary(BaseModel):
     company_id: UUID
     product_count: int = 0
@@ -134,6 +164,19 @@ class ProductResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
+class StockMovementCreate(BaseModel):
+    product_id: UUID
+    movement_type: Literal["opening_stock", "adjustment_in", "adjustment_out"]
+    movement_date: date
+    quantity: float = Field(gt=0)
+    unit_cost: float = Field(ge=0)
+    notes: str | None = Field(default=None, max_length=10000)
+
+    @field_validator("notes", mode="before")
+    @classmethod
+    def normalize_notes(cls, value: Any) -> Any:
+        return value.strip() or None if isinstance(value, str) else value
 
 def _require_company_access(client: Any, user_id: str, company_id: UUID) -> dict[str, Any]:
     result = (
@@ -303,6 +346,96 @@ def create_product(company_id: UUID, payload: ProductCreate, auth: CurrentAuth) 
         raise HTTPException(status_code=400, detail="Could not create product.") from exc
 
 
+@router.patch(
+    "/companies/{company_id}/products/{product_id}",
+    response_model=ProductResponse,
+)
+def update_product(
+    company_id: UUID,
+    product_id: UUID,
+    payload: ProductUpdate,
+    auth: CurrentAuth,
+) -> dict[str, Any]:
+    user, client = auth
+    _require_company_access(client, user["id"], company_id)
+
+    changes = payload.model_dump(exclude_unset=True)
+    if not changes:
+        raise HTTPException(status_code=400, detail="Provide at least one product field to update.")
+
+    try:
+        if "category_id" in changes:
+            _ensure_valid_category(client, company_id, changes["category_id"])
+        if "unit_of_measure_id" in changes:
+            _ensure_valid_unit(client, company_id, changes["unit_of_measure_id"])
+
+        result = (
+            client.table("products")
+            .update(changes)
+            .eq("company_id", str(company_id))
+            .eq("id", str(product_id))
+            .execute()
+        )
+        if not result.data:
+            raise HTTPException(status_code=404, detail="Product not found.")
+        return result.data[0]
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Could not update product.") from exc
+
+
+@router.get("/companies/{company_id}/stock")
+def list_stock(company_id: UUID, auth: CurrentAuth) -> list[dict[str, Any]]:
+    user, client = auth
+    _require_company_access(client, user["id"], company_id)
+
+    try:
+        result = (
+            client.table("inventory_movements")
+            .select("id,product_id,movement_type,movement_date,quantity,unit_cost,total_cost,reference_number,notes,created_at")
+            .eq("company_id", str(company_id))
+            .order("movement_date", desc=True)
+            .order("created_at", desc=True)
+            .execute()
+        )
+        return result.data or []
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail="Could not load stock movements.") from exc
+
+
+@router.post("/companies/{company_id}/stock",status_code=status.HTTP_201_CREATED,)
+def create_stock_movement(
+    company_id: UUID,
+    payload: "StockMovementCreate",
+    auth: CurrentAuth,
+) -> dict[str, Any]:
+    user, client = auth
+    _require_company_access(client, user["id"], company_id)
+
+    try:
+        result = client.rpc(
+            "record_inventory_movement",
+            {
+                "p_company_id": str(company_id),
+                "p_product_id": str(payload.product_id),
+                "p_movement_type": payload.movement_type,
+                "p_movement_date": payload.movement_date.isoformat(),
+                "p_quantity": payload.quantity,
+                "p_unit_cost": payload.unit_cost,
+                "p_notes": payload.notes,
+                "p_created_by": user["id"],
+            },
+        ).execute()
+        if not result.data:
+            raise HTTPException(status_code=502, detail="Stock movement was not returned after creation.")
+        return result.data
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Could not record stock movement.") from exc
+
+
 @router.get("/companies/{company_id}")
 def company_inventory_root(company_id: UUID, auth: CurrentAuth) -> dict[str, Any]:
     user, client = auth
@@ -324,6 +457,8 @@ __all__ = [
     "ProductCreate",
     "ProductResponse",
     "InventorySummary",
+    "ProductUpdate",
+    "StockMovementCreate",
 ]
 
 

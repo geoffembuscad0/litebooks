@@ -35,6 +35,28 @@ export type Product = {
   created_at: string
 }
 
+export type StockMovement = {
+  id: string
+  product_id: string
+  movement_type: 'opening_stock' | 'purchase' | 'sale' | 'adjustment_in' | 'adjustment_out'
+  movement_date: string
+  quantity: number
+  unit_cost: number
+  total_cost: number
+  reference_number: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type StockMovementInput = {
+  product_id: string
+  movement_type: 'opening_stock' | 'adjustment_in' | 'adjustment_out'
+  movement_date: string
+  quantity: number
+  unit_cost: number
+  notes?: string | null
+}
+
 export type InventorySummary = {
   company_id: string
   product_count: number
@@ -89,4 +111,32 @@ export const inventoryService = {
     method: 'POST',
     body: JSON.stringify(payload),
   }),
+  updateProduct: (
+    token: string,
+    companyId: string,
+    productId: string,
+    payload: Partial<{
+      category_id: string | null
+      unit_of_measure_id: string
+      sku: string | null
+      barcode: string | null
+      name: string
+      description: string | null
+      default_cost: number
+      selling_price: number
+      reorder_level: number
+      is_active: boolean
+    }>,
+  ) => apiRequest<Product>(
+    `/api/inventory/companies/${companyId}/products/${productId}`,
+    token,
+    { method: 'PATCH', body: JSON.stringify(payload) },
+  ),
+  listStock: (token: string, companyId: string) =>
+    apiRequest<StockMovement[]>(`/api/inventory/companies/${companyId}/stock`, token),
+  createStockMovement: (token: string, companyId: string, payload: StockMovementInput) =>
+    apiRequest<StockMovement>(`/api/inventory/companies/${companyId}/stock`, token, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 }
