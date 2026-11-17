@@ -5,6 +5,7 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 from postgrest.exceptions import APIError
+from collections import defaultdict
 
 from app.dependencies.auth import CurrentAuth
 
@@ -205,53 +206,250 @@ def update_company(company_id: UUID, payload: CompanyUpdate, auth: CurrentAuth) 
 @router.get("/{company_id}/dashboard", tags=["dashboard"])
 def get_company_dashboard(company_id: UUID, auth: CurrentAuth) -> dict[str, Any]:
     user, client = auth
+
     try:
-        company = _get_owned_company(client, user["id"], company_id)
+        company = _get_owned_company(
+            client,
+            user["id"],
+            company_id
+        )
+
         today = date.today()
         month_start = today.replace(day=1).isoformat()
+        today_string = today.isoformat()
+
+        company_id_string = str(company_id)
+
+        # --------------------------------------------------
+        # 1. Monthly transactions
+        # --------------------------------------------------
+
         transaction_result = (
             client.table("transactions")
-            .select("id,transaction_number,transaction_type,transaction_date,status,total_amount")
-            .eq("company_id", str(company_id))
+            .select(
+                "id,transaction_number,transaction_type,"
+                "transaction_date,status,total_amount"
+            )
+            .eq("company_id", company_id_string)
             .eq("status", "posted")
             .gte("transaction_date", month_start)
-            .lte("transaction_date", today.isoformat())
+            .lte("transaction_date", today_string)
             .order("transaction_date", desc=True)
             .execute()
         )
-        rows = transaction_result.data or []
-        totals = {"sales": 0.0, "purchases": 0.0, "expenses": 0.0}
-        for row in rows:
-            amount = float(row.get("total_amount") or 0)
-            if row.get("transaction_type") == "sale":
-                totals["sales"] += amount
-            elif row.get("transaction_type") == "purchase":
-                totals["purchases"] += amount
-            elif row.get("transaction_type") == "expense":
-                totals["expenses"] += amount
+
+        transactions = transaction_result.data or []
+
+        monthly_totals = {
+            "sales": 0.0,
+            "purchases": 0.0,
+            "expenses": 0.0,
+        }
+
+        for transaction in transactions:
+            amount = float(
+                transaction.get("total_amount") or 0
+            )
+
+            transaction_type = transaction.get(
+                "transaction_type"
+            )
+
+            if transaction_type == "sale":
+                monthly_totals["sales"] += amount
+
+            elif transaction_type == "purchase":
+                monthly_totals["purchases"] += amount
+
+            elif transaction_type == "expense":
+                monthly_totals["expenses"] += amount
+
+        # --------------------------------------------------
+        # 2. Product records
+        # --------------------------------------------------
+
+        product_result = (
+            client.table("products")
+            .select(
+                "id,name,sku,reorder_level,is_active"
+            )
+            .eq("company_id", company_id_string)
+            .execute()
+        )
+
+        products = product_result.data or []
+
+        active_products = [
+            product
+            for product in products
+            if product.get("is_active")
+        ]
+
+        # --------------------------------------------------
+        # 3. Inventory movements
+        # --------------------------------------------------
+
+        movement_result = (
+            client.table("inventory_movements")
+            .select(
+                "product_id,movement_type,quantity,unit_cost"
+            )
+            .eq("company_id", company_id_string)
+            .execute()
+        )
+
+        movements = movement_result.data or []
+
+        stock_by_product = defaultdict(
+            lambda: {
+                "quantity": 0.0,
+                "inventory_value": 0.0,
+            }
+        )
+
+        incoming_movements = {
+            "opening_stock",
+            "purchase",
+            "adjustment_in",
+        }
+
+        outgoing_movements = {
+            "sale",
+            "adjustment_out",
+        }
+
+        for movement in movements:
+            product_id = movement["product_id"]
+
+            quantity = float(
+                movement.get("quantity") or 0
+            )
+
+            unit_cost = float(
+                movement.get("unit_cost") or 0
+            )
+
+            movement_type = movement.get(
+                "movement_type"
+            )
+
+            movement_value = quantity * unit_cost
+
+            if movement_type in incoming_movements:
+                stock_by_product[product_id]["quantity"] += quantity
+
+                stock_by_product[product_id]["inventory_value"] += (
+                    movement_value
+                )
+
+            elif movement_type in outgoing_movements:
+                stock_by_product[product_id]["quantity"] -= quantity
+
+                stock_by_product[product_id]["inventory_value"] -= (
+                    movement_value
+                )
+
+        # --------------------------------------------------
+        # 4. Calculate inventory summary
+        # --------------------------------------------------
+
+        total_stock_quantity = 0.0
+        total_inventory_value = 0.0
+
+        low_stock_products = []
+
+        for product in active_products:
+            product_id = product["id"]
+
+            stock = stock_by_product[product_id]
+
+            quantity = stock["quantity"]
+
+            inventory_value = stock["inventory_value"]
+
+            reorder_level = float(
+                product.get("reorder_level") or 0
+            )
+
+            total_stock_quantity += quantity
+
+            total_inventory_value += inventory_value
+
+            if quantity <= reorder_level:
+                low_stock_products.append({
+                    "id": product_id,
+                    "name": product["name"],
+                    "sku": product.get("sku"),
+                    "stock_quantity": round(quantity, 4),
+                    "reorder_level": reorder_level,
+                })
+
+        # --------------------------------------------------
+        # 5. Active accounts
+        # --------------------------------------------------
 
         account_result = (
             client.table("accounts")
             .select("id", count="exact")
-            .eq("company_id", str(company_id))
+            .eq("company_id", company_id_string)
             .eq("is_active", True)
             .execute()
         )
+
+        # --------------------------------------------------
+        # 6. Dashboard response
+        # --------------------------------------------------
+
         return {
             "company": company,
+
             "period_start": month_start,
-            "period_end": today.isoformat(),
-            "sales": round(totals["sales"], 2),
-            "purchases": round(totals["purchases"], 2),
-            "expenses": round(totals["expenses"], 2),
-            "transaction_count": len(rows),
+            "period_end": today_string,
+
+            # Financial activity
+            "sales": round(monthly_totals["sales"], 2),
+            "purchases": round(monthly_totals["purchases"], 2),
+            "expenses": round(monthly_totals["expenses"], 2),
+
+            # Transaction summary
+            "transaction_count": len(transactions),
+
+            "recent_transactions": transactions[:6],
+
+            # Product summary
+            "product_count": len(products),
+            "active_product_count": len(active_products),
+
+            # Inventory summary
+            "total_stock_quantity": round(
+                total_stock_quantity,
+                4
+            ),
+
+            "total_inventory_value": round(
+                total_inventory_value,
+                2
+            ),
+
+            # Low-stock summary
+            "low_stock_product_count": len(
+                low_stock_products
+            ),
+
+            "low_stock_products": low_stock_products[:5],
+
+            # Accounting summary
             "active_account_count": account_result.count or 0,
-            "recent_transactions": rows[:6],
         }
+
     except HTTPException:
         raise
+
     except Exception as exc:
-        raise HTTPException(status_code=502, detail="Could not load the company dashboard.") from exc
+        raise HTTPException(
+            status_code=502,
+            detail="Could not load the company dashboard."
+        ) from exc
 
 
 @router.post("", response_model=CompanyResponse, status_code=status.HTTP_201_CREATED)
