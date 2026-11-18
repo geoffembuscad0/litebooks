@@ -30,6 +30,7 @@ export default function Login() {
       <form className="form-stack" onSubmit={submit}>
         <label>Email address<input type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} required /></label>
         <label>Password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required /></label>
+        <Link className="form-footer" to="/forgot-password">Forgot password?</Link>
         <button className="button primary full" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
       </form>
       <p className="form-footer">New to LiteBooks? <Link to="/register">Create an account</Link></p>

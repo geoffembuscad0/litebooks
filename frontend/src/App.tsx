@@ -4,6 +4,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { RequireAuth } from './components/common/RequireAuth'
 import Register from './pages/auth/Register'
 import Login from './pages/auth/Login'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import ResetPassword from './pages/auth/ResetPassword'
 import CompanySetup from './pages/auth/CompanySetup'
 import CompanySelection from './pages/company/CompanySelection'
 import CompanyWorkspace from './pages/company/CompanyWorkspace'
@@ -27,6 +29,8 @@ function AppRoutes() {
     <Route path="/" element={<AuthEntry />} />
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Route path="/reset-password" element={<ResetPassword />} />
     <Route element={<RequireAuth />}>
       <Route path="/onboarding" element={<CompanySetup />} />
       <Route path="/company/:companyId" element={<CompanyWorkspace />} />
