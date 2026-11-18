@@ -14,9 +14,22 @@ export default function Register() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(''); setMessage(''); setBusy(true)
+
+    const fullName = name.trim().replace(/\s+/g, ' ')
+    const nameParts = fullName.split(' ')
+    const firstname = nameParts[0]
+    const lastname = nameParts.slice(1).join(' ') || firstname
+
     const { data, error: signUpError } = await supabase.auth.signUp({
-      email: email.trim(), password,
-      options: { data: { full_name: name.trim() } },
+      email: email.trim(),
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          firstname,
+          lastname,
+        },
+      },
     })
     setBusy(false)
     if (signUpError) { setError(signUpError.message); return }
