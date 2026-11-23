@@ -1,0 +1,1 @@
+LiteBooks is a multi-company inventory and accounting system for small businesses. It combines product and stock management, purchase workflows, weighted-average inventory costing, double-entry accounting, and financial reports in a secure, company-scoped workspace.
