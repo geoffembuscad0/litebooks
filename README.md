@@ -163,6 +163,7 @@ FRONTEND_ORIGINS=http://localhost:5173
 With the virtual environment activated and the current directory set to `backend/`, start FastAPI:
 
 ```bash
+python scripts/seed_demo_users.py
 fastapi dev app/main.py
 ```
 
