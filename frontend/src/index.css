@@ -1,8 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap');
 
-:root { font-family: 'DM Sans', sans-serif; color: #17231f; background: #f5f7f5; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
-* { box-sizing: border-box; }
-body { margin: 0; min-width: 320px; min-height: 100vh; }
-button, input, select { font: inherit; }
-a { color: inherit; }
+/* Tailwind theme + utilities only (no preflight), so the existing auth pages are untouched */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  --font-sans: 'DM Sans', sans-serif;
+  --font-display: 'Manrope', sans-serif;
+}
+
+@layer base {
+  :root { font-family: 'DM Sans', sans-serif; color: #1e1b4b; background: #f8fafc; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+  body { margin: 0; min-width: 320px; min-height: 100vh; }
+  button, input, select { font: inherit; }
+  a { color: inherit; }
+}
 #root { min-height: 100vh; }

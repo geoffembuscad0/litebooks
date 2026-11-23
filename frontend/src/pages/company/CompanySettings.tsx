@@ -1,22 +1,22 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { companyService, type CompanyInput } from '../../services/companyService'
+import { alertClass, btnPrimary, btnSecondary, cardClass, hintClass, inputClass, labelClass } from '../../components/ui/styles'
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
-type CompanySettingsInput = Partial<CompanyInput> & { timezone: string }
+const currencies = [['PHP', 'Philippine Peso'], ['USD', 'US Dollar'], ['EUR', 'Euro'], ['GBP', 'Pound Sterling'], ['SGD', 'Singapore Dollar'], ['AUD', 'Australian Dollar'], ['CAD', 'Canadian Dollar'], ['JPY', 'Japanese Yen']]
 
 export default function CompanySettings() {
   const { companyId } = useParams()
-  const { session, user, signOut } = useAuth()
+  const { session, user } = useAuth()
   const queryClient = useQueryClient()
   const companies = useQuery({ queryKey: ['companies', user?.id], queryFn: () => companyService.list(session!.access_token), enabled: Boolean(session) })
   const company = companies.data?.find(item => item.id === companyId)
   const [message, setMessage] = useState('')
   const update = useMutation({
-    mutationFn: (input: CompanySettingsInput) => companyService.update(session!.access_token, companyId!, input),
+    mutationFn: (input: Partial<CompanyInput> & { timezone: string }) => companyService.update(session!.access_token, companyId!, input),
     onSuccess: async () => {
       setMessage('Company settings saved.')
       await queryClient.invalidateQueries({ queryKey: ['companies', user?.id] })
@@ -25,9 +25,7 @@ export default function CompanySettings() {
     onError: (error: Error) => setMessage(error.message),
   })
 
-  if (companies.isPending) return <div className="screen-state">Loading company settings…</div>
-  if (companies.isError) return <main className="center-shell"><div className="alert error" role="alert">{companies.error.message}<button className="text-button" onClick={() => void companies.refetch()}>Try again</button></div></main>
-  if (!company) return <Navigate to="/companies" replace />
+  if (!company) return null
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -35,7 +33,6 @@ export default function CompanySettings() {
     const form = new FormData(event.currentTarget)
     update.mutate({
       company_name: String(form.get('company_name')).trim(),
-      company_code: String(form.get('company_code')).trim().toUpperCase(),
       address: String(form.get('address')).trim() || undefined,
       contact_number: String(form.get('contact_number')).trim() || undefined,
       email: String(form.get('email')).trim() || undefined,
@@ -45,26 +42,31 @@ export default function CompanySettings() {
     })
   }
 
-  return <main className="app-shell">
-    <header className="topbar"><Link className="brand" to="/companies">LITE<span>BOOKS</span></Link><nav className="top-nav"><Link className="nav-link" to={`/company/${company.id}`}>Dashboard</Link><Link className="nav-link active" to={`/company/${company.id}/settings`}>Company settings</Link></nav><div className="user-actions"><Link className="nav-link" to="/companies">Switch company</Link><Link className="nav-link" to="/account">My profile</Link><button className="text-button" onClick={() => void signOut()}>Sign out</button></div></header>
-    <section className="settings-content">
-      <Link className="back-link" to="/companies">← Back to companies</Link>
-      <div className="page-heading settings-heading"><div><p className="eyebrow">WORKSPACE PREFERENCES</p><h1>Company settings</h1><p className="muted">Update your company details and accounting preferences.</p></div></div>
-      <form className="panel settings-panel" onSubmit={submit}>
-        <div className="settings-section-heading"><h2>Business details</h2><p>These details are used across your company workspace.</p></div>
-        <div className="form-stack two-column settings-form">
-          <label className="span-two">Company name<input name="company_name" defaultValue={company.company_name} required maxLength={150} /></label>
-          <label>Business code<input name="company_code" defaultValue={company.company_code} required maxLength={50} /><small>Must be unique across your workspaces.</small></label>
-          <label>Currency<select name="currency" defaultValue={company.currency}><option value="PHP">PHP — Philippine Peso</option><option value="USD">USD — US Dollar</option><option value="EUR">EUR — Euro</option><option value="GBP">GBP — Pound Sterling</option><option value="SGD">SGD — Singapore Dollar</option><option value="AUD">AUD — Australian Dollar</option><option value="CAD">CAD — Canadian Dollar</option><option value="JPY">JPY — Japanese Yen</option></select></label>
-          <label>Business address<input name="address" defaultValue={company.address ?? ''} maxLength={10000} /></label>
-          <label>Contact number<input name="contact_number" type="tel" defaultValue={company.contact_number ?? ''} maxLength={30} /></label>
-          <label>Business email<input name="email" type="email" defaultValue={company.email ?? ''} /></label>
-          <label>Fiscal year starts<select name="fiscal_year_start" defaultValue={company.fiscal_year_start}>{months.map((month, index) => <option value={index + 1} key={month}>{month}</option>)}</select></label>
-          <label className="span-two">Timezone<input name="timezone" defaultValue={company.timezone} required maxLength={100} placeholder="Asia/Manila" /><small>Use an IANA timezone, for example Asia/Manila or America/New_York.</small></label>
-        </div>
-        {message && <div className={`alert ${update.isError ? 'error' : 'success'}`} role="status">{message}</div>}
-        <div className="settings-actions"><Link className="button secondary" to={`/company/${company.id}`}>Cancel</Link><button className="button primary" disabled={update.isPending}>{update.isPending ? 'Saving…' : 'Save changes'}</button></div>
-      </form>
-    </section>
-  </main>
+  return <div className="max-w-3xl">
+    <p className="text-xs font-semibold uppercase tracking-widest text-indigo-600">Workspace preferences</p>
+    <h1 className="mt-1 font-display text-3xl font-extrabold tracking-tight text-slate-900">Company settings</h1>
+    <p className="mb-8 mt-1 text-sm text-slate-500">Update your company details and accounting preferences.</p>
+
+    <form className={`${cardClass} p-6 sm:p-8`} onSubmit={submit}>
+      <div className="border-b border-slate-100 pb-5">
+        <h2 className="font-display text-base font-bold text-slate-900">Business details</h2>
+        <p className="text-xs text-slate-500">These details are used across your company workspace.</p>
+      </div>
+      <div className="mt-6 grid gap-5 sm:grid-cols-2">
+        <label className={`${labelClass} sm:col-span-2`}>Company name<input className={inputClass} name="company_name" defaultValue={company.company_name} required maxLength={150} /></label>
+        <label className={labelClass}>Company code<input className={inputClass} value={company.company_code} readOnly /><small className={hintClass}>Company codes cannot be changed after setup.</small></label>
+        <label className={labelClass}>Currency<select className={inputClass} name="currency" defaultValue={company.currency}>{currencies.map(([code, name]) => <option key={code} value={code}>{code} — {name}</option>)}</select></label>
+        <label className={labelClass}>Business address<input className={inputClass} name="address" defaultValue={company.address ?? ''} maxLength={10000} /></label>
+        <label className={labelClass}>Contact number<input className={inputClass} name="contact_number" type="tel" defaultValue={company.contact_number ?? ''} maxLength={30} /></label>
+        <label className={labelClass}>Business email<input className={inputClass} name="email" type="email" defaultValue={company.email ?? ''} /></label>
+        <label className={labelClass}>Fiscal year starts<select className={inputClass} name="fiscal_year_start" defaultValue={company.fiscal_year_start}>{months.map((month, index) => <option value={index + 1} key={month}>{month}</option>)}</select></label>
+        <label className={`${labelClass} sm:col-span-2`}>Timezone<input className={inputClass} name="timezone" defaultValue={company.timezone} required maxLength={100} placeholder="Asia/Manila" /><small className={hintClass}>Use an IANA timezone, for example Asia/Manila or America/New_York.</small></label>
+      </div>
+      {message && <div className={`${alertClass(update.isError ? 'error' : 'success')} mt-6`} role="status">{message}</div>}
+      <div className="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-5">
+        <Link className={btnSecondary} to={`/company/${company.id}`}>Cancel</Link>
+        <button className={btnPrimary} disabled={update.isPending}>{update.isPending ? 'Saving…' : 'Save changes'}</button>
+      </div>
+    </form>
+  </div>
 }

@@ -2,19 +2,14 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { RequireAuth } from './components/common/RequireAuth'
+import AppShell from './components/layouts/AppShell'
 import Register from './pages/auth/Register'
 import Login from './pages/auth/Login'
-import ForgotPassword from './pages/auth/ForgotPassword'
-import ResetPassword from './pages/auth/ResetPassword'
 import CompanySetup from './pages/auth/CompanySetup'
 import CompanySelection from './pages/company/CompanySelection'
 import CompanyWorkspace from './pages/company/CompanyWorkspace'
 import CompanySettings from './pages/company/CompanySettings'
 import AccountProfile from './pages/account/AccountProfile'
-import InventoryPage from './pages/inventory/InventoryPage'
-import ContactsPage from './pages/contacts/ContactsPage'
-import PurchasesPage from './pages/purchases/PurchasesPage'
-import './dashboard.css'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 30_000 } } })
 
@@ -29,17 +24,14 @@ function AppRoutes() {
     <Route path="/" element={<AuthEntry />} />
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />
-    <Route path="/forgot-password" element={<ForgotPassword />} />
-    <Route path="/reset-password" element={<ResetPassword />} />
     <Route element={<RequireAuth />}>
       <Route path="/onboarding" element={<CompanySetup />} />
-      <Route path="/company/:companyId" element={<CompanyWorkspace />} />
-      <Route path="/company/:companyId/settings" element={<CompanySettings />} />
-      <Route path="/company/:companyId/inventory" element={<InventoryPage />} />
-      <Route path="/company/:companyId/contacts" element={<ContactsPage />} />
-      <Route path="/company/:companyId/purchases" element={<PurchasesPage />} />
       <Route path="/companies" element={<CompanySelection />} />
-      <Route path="/account" element={<AccountProfile />} />
+      <Route element={<AppShell />}>
+        <Route path="/company/:companyId" element={<CompanyWorkspace />} />
+        <Route path="/company/:companyId/settings" element={<CompanySettings />} />
+        <Route path="/account" element={<AccountProfile />} />
+      </Route>
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
