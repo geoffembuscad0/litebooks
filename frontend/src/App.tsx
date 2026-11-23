@@ -5,6 +5,8 @@ import { RequireAuth } from './components/common/RequireAuth'
 import AppShell from './components/layouts/AppShell'
 import Register from './pages/auth/Register'
 import Login from './pages/auth/Login'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import ResetPassword from './pages/auth/ResetPassword'
 import CompanySetup from './pages/auth/CompanySetup'
 import CompanySelection from './pages/company/CompanySelection'
 import CompanyWorkspace from './pages/company/CompanyWorkspace'
@@ -13,37 +15,10 @@ import AccountProfile from './pages/account/AccountProfile'
 import InventoryPage from './pages/inventory/InventoryPage'
 import ContactsPage from './pages/contacts/ContactsPage'
 import PurchasesPage from './pages/purchases/PurchasesPage'
+import AccountBalancesPage from './pages/accounting/AccountBalancesPage'
 import './modules.css'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 30_000 } } })
-
-function AuthEntry() {
-  const { session, loading } = useAuth()
-  if (loading) return <div className="screen-state">Loading LiteBooks…</div>
-  return <Navigate to={session ? '/companies' : '/login'} replace />
-}
-
-function AppRoutes() {
-  return <Routes>
-    <Route path="/" element={<AuthEntry />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/register" element={<Register />} />
-    <Route element={<RequireAuth />}>
-      <Route path="/onboarding" element={<CompanySetup />} />
-      <Route path="/companies" element={<CompanySelection />} />
-      <Route element={<AppShell />}>
-        <Route path="/company/:companyId" element={<CompanyWorkspace />} />
-        <Route path="/company/:companyId/inventory" element={<InventoryPage />} />
-        <Route path="/company/:companyId/contacts" element={<ContactsPage />} />
-        <Route path="/company/:companyId/purchases" element={<PurchasesPage />} />
-        <Route path="/company/:companyId/settings" element={<CompanySettings />} />
-        <Route path="/account" element={<AccountProfile />} />
-      </Route>
-    </Route>
-    <Route path="*" element={<Navigate to="/" replace />} />
-  </Routes>
-}
-
-export default function App() {
-  return <QueryClientProvider client={queryClient}><AuthProvider><AppRoutes /></AuthProvider></QueryClientProvider>
-}
+function AuthEntry() { const { session, loading } = useAuth(); if (loading) return <div className="screen-state">Loading LiteBooks…</div>; return <Navigate to={session ? '/companies' : '/login'} replace /> }
+function AppRoutes() { return <Routes><Route path="/" element={<AuthEntry />} /><Route path="/login" element={<Login />} /><Route path="/register" element={<Register />} /><Route path="/forgot-password" element={<ForgotPassword />} /><Route path="/reset-password" element={<ResetPassword />} /><Route element={<RequireAuth />}><Route path="/onboarding" element={<CompanySetup />} /><Route path="/companies" element={<CompanySelection />} /><Route element={<AppShell />}><Route path="/company/:companyId" element={<CompanyWorkspace />} /><Route path="/company/:companyId/inventory" element={<InventoryPage />} /><Route path="/company/:companyId/contacts" element={<ContactsPage />} /><Route path="/company/:companyId/purchases" element={<PurchasesPage />} /><Route path="/company/:companyId/accounting" element={<AccountBalancesPage />} /><Route path="/company/:companyId/settings" element={<CompanySettings />} /><Route path="/account" element={<AccountProfile />} /></Route></Route><Route path="*" element={<Navigate to="/" replace />} /></Routes> }
+export default function App() { return <QueryClientProvider client={queryClient}><AuthProvider><AppRoutes /></AuthProvider></QueryClientProvider> }
