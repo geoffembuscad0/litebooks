@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { companyService } from '../../services/companyService'
 import { contactService, type Contact } from '../../services/contactService'
@@ -15,7 +15,7 @@ const money = (value: number) =>
 
 export default function PurchasesPage() {
   const { companyId } = useParams()
-  const { session, user, signOut } = useAuth()
+  const { session, user } = useAuth()
   const queryClient = useQueryClient()
   const [lines, setLines] = useState<DraftLine[]>([{ product_id: '', quantity: '1', unit_price: '0' }])
   const [message, setMessage] = useState('')
