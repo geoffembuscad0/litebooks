@@ -482,60 +482,27 @@ expense twice.
 
 ## 7. Planned development stages
 
-The project will be developed in manageable stages.
+The project is being developed incrementally. The stages below reflect
+the current implementation rather than treating all planned capabilities
+as already available.
 
-  -----------------------------------------------------------------------
-  Stage                   Focus                   Main outcome
-  ----------------------- ----------------------- -----------------------
-  1                       Project and development React, FastAPI,
-                          setup                   Supabase, and GitHub
-                                                  working together.
-
-  2                       Core database structure Tables for profiles,
-                                                  companies, products,
-                                                  contacts, transactions,
-                                                  inventory, and
-                                                  accounting.
-
-  3                       Database integrity and  Shared database
-                          defaults                functions, validation
-                                                  safeguards, and default
-                                                  Chart of Accounts.
-
-  4                       Database security       Authentication
-                                                  integration, company
-                                                  ownership checks, and
-                                                  RLS policies.
-
-  5                       Account and company     Registration, company
-                          workflows               creation, company
-                                                  selection, and company
-                                                  switching.
-
-  6                       Inventory workflows     Categories, units,
-                                                  products, opening
-                                                  stock, movements, and
-                                                  stock valuation.
-
-  7                       Transaction workflows   Purchases, sales,
-                                                  expenses, and payments.
-
-  8                       Accounting workflows    Journal generation,
-                                                  posting, General
-                                                  Ledger, and Trial
-                                                  Balance.
-
-  9                       Financial reports       Profit and Loss,
-                                                  Balance Sheet, and
-                                                  inventory reports.
-
-  10                      Dashboard and           Business summaries,
-                          refinement              usability improvements,
-                                                  testing, and bug fixes.
-  -----------------------------------------------------------------------
+| Stage | Focus | Current status |
+| --- | --- | --- |
+| 1 | Project and development setup | Complete: React, FastAPI, Supabase, and repository workflows are established. |
+| 2 | Core database structure | Foundation implemented: company, inventory, contact, transaction, payment, and accounting tables are defined through migrations. |
+| 3 | Database integrity, defaults, and security | Foundation implemented: company Chart of Accounts seeding, database functions, constraints, triggers, and company-scoped RLS policies exist. Further hardening and review remain ongoing. |
+| 4 | Authentication and company workflows | Implemented: registration/sign-in, company creation, selection, switching, and company-scoped access checks. |
+| 5 | Inventory and contacts | Implemented foundation: product/category/unit management, stock movements, weighted-average costing, and contact management are available through existing APIs and workspace pages. |
+| 6 | Purchasing | In progress: purchase drafts can be created and posted, and posting records inventory movements. The purchase page is included in the workspace; accounts payable journal generation and supplier payment workflows remain to be completed. |
+| 7 | Sales, expenses, and payments | Planned/in progress: the database has transaction and payment foundations, but complete APIs, user interfaces, posting rules, and accounting integration are not yet available. |
+| 8 | Accounting workflows | Foundation implemented: default accounts, journal-entry structures, debit/credit validation, audit safeguards, and accounting-period controls exist. Transaction-generated journals, accounting APIs, and user interfaces remain incomplete. |
+| 9 | Dashboard | Partially implemented: company dashboard summaries and recent activity are available, but the figures depend on the transaction workflows completed so far. |
+| 10 | Financial reports | Planned: Profit and Loss, Balance Sheet, Trial Balance, General Ledger, and expanded inventory reports are not yet complete. |
+| 11 | Integration and refinement | Ongoing: connect the modules, improve usability, validate business rules, and add regression coverage as workflows are completed. |
 
 Stages may overlap when a feature requires supporting work from another
-stage.
+stage. A database table or backend foundation does not by itself mean
+that a complete user-facing workflow is available.
 
 ## 8. Controls and safeguards
 
@@ -561,25 +528,58 @@ progresses.
 
 ## 9. Current implementation status
 
-The project has been set up with a React/TypeScript frontend, a FastAPI
-backend, and a hosted Supabase project.
+LiteBooks uses a React/TypeScript frontend, a FastAPI backend, and a
+hosted Supabase PostgreSQL database. The project has progressed beyond
+the initial setup and schema stage into the implementation of core
+operational workflows.
 
-The initial database design has been prepared in batches through:
+### Implemented foundations
 
--   Profiles and companies
--   Categories, units of measure, and products
--   Contacts and accounts
--   Transactions, transaction items, and payments
--   Inventory movements
--   Journal entries and journal lines
+- **Authentication and company management:** users can register and
+  sign in, create companies, select a workspace, and work within
+  company-scoped records. Backend endpoints verify company ownership.
+- **Database security and defaults:** migrations establish company
+  ownership policies and Row Level Security for the relevant tables.
+  New companies are seeded with a default Chart of Accounts.
+- **Inventory:** categories, units of measure, and products can be
+  managed. Stock movements are recorded through database functions,
+  with perpetual weighted-average costing and safeguards around
+  movement history.
+- **Contacts:** customer and supplier records can be listed, created,
+  and updated through the contacts API and frontend page.
+- **Purchases:** users can create purchase drafts and post them.
+  Posting creates incoming inventory movements and updates inventory
+  costing. The purchase page is connected to the company workspace.
+- **Dashboard:** the company workspace has a dashboard summary for
+  available operational and financial activity.
+- **Accounting foundation:** account and journal tables, default
+  accounts, debit/credit validation, audit logging, and accounting
+  period controls have been established in database migrations.
 
-The developer has reported successful Supabase CLI dry-run checks
-through the journal-entry batch. A dry run is a preview, not proof that
-the migrations have been applied to the hosted database.
+### In progress or not yet complete
 
-The next planned work is to complete database helper functions and
-triggers, seed each new company with a suitable default Chart of
-Accounts, and implement and test Row Level Security policies.
+- **Purchase accounting:** purchase posting currently updates
+  transactions and inventory. It still needs to generate the
+  corresponding Inventory and Accounts Payable journal entry.
+- **Supplier and customer payments:** the payments table exists, but
+  the complete payment API, validation rules, journal generation, and
+  user interface are not yet implemented.
+- **Sales:** the end-to-end workflow for sale drafts, stock deduction,
+  revenue recognition, cost of goods sold, receivables, and customer
+  payments remains to be implemented.
+- **Expenses:** expense entry, account selection, posting, and payment
+  workflows remain to be implemented.
+- **Accounting interface:** Chart of Accounts management, journal
+  review, General Ledger, and Trial Balance screens are not yet
+  available as complete user-facing modules.
+- **Financial reports:** Profit and Loss, Balance Sheet, and other
+  financial reports remain planned.
+
+The database foundations should not be confused with completed
+business workflows. A workflow is considered complete only when its
+frontend, API validation, database transaction, inventory effects
+(where applicable), accounting entries, and audit safeguards work
+together.
 
 ## 10. Scope boundaries and future possibilities
 

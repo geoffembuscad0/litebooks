@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, NavLink, Navigate, Outlet, useParams } from 'react-router-dom'
-import { BarChart3, BookOpen, Building2, ChevronsUpDown, LayoutDashboard, LogOut, Menu, Package, Receipt, Settings, UserCircle, Users, X, type LucideIcon } from 'lucide-react'
+import { BarChart3, BookOpen, Building2, ChevronsUpDown, LayoutDashboard, LogOut, Menu, Package, Receipt, Settings, ShoppingCart, UserCircle, Users, X, type LucideIcon } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { companyService } from '../../services/companyService'
 
@@ -31,6 +31,9 @@ export default function AppShell() {
     { label: 'Dashboard', icon: LayoutDashboard, to: base, end: true },
     { label: 'Inventory', icon: Package },
     { label: 'Contacts', icon: Users },
+    { label: 'Inventory', icon: Package, to: `${base}/inventory` },
+    { label: 'Contacts', icon: Users, to: `${base}/contacts` },
+    { label: 'Purchases', icon: ShoppingCart, to: `${base}/purchases` },
     { label: 'Transactions', icon: Receipt },
     { label: 'Accounting', icon: BookOpen },
     { label: 'Reports', icon: BarChart3 },

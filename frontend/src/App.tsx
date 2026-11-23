@@ -10,6 +10,9 @@ import CompanySelection from './pages/company/CompanySelection'
 import CompanyWorkspace from './pages/company/CompanyWorkspace'
 import CompanySettings from './pages/company/CompanySettings'
 import AccountProfile from './pages/account/AccountProfile'
+import InventoryPage from './pages/inventory/InventoryPage'
+import ContactsPage from './pages/contacts/ContactsPage'
+import PurchasesPage from './pages/purchases/PurchasesPage'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 30_000 } } })
 
@@ -29,6 +32,9 @@ function AppRoutes() {
       <Route path="/companies" element={<CompanySelection />} />
       <Route element={<AppShell />}>
         <Route path="/company/:companyId" element={<CompanyWorkspace />} />
+        <Route path="/company/:companyId/inventory" element={<InventoryPage />} />
+        <Route path="/company/:companyId/contacts" element={<ContactsPage />} />
+        <Route path="/company/:companyId/purchases" element={<PurchasesPage />} />
         <Route path="/company/:companyId/settings" element={<CompanySettings />} />
         <Route path="/account" element={<AccountProfile />} />
       </Route>
