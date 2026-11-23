@@ -446,10 +446,8 @@ def get_company_dashboard(company_id: UUID, auth: CurrentAuth) -> dict[str, Any]
         raise
 
     except Exception as exc:
-        raise HTTPException(
-            status_code=502,
-            detail="Could not load the company dashboard."
-        ) from exc
+        logger.error("dashboard failed: %r", exc)
+        raise HTTPException(status_code=502, detail="Could not load the company dashboard.") from exc
 
 
 @router.post("", response_model=CompanyResponse, status_code=status.HTTP_201_CREATED)
