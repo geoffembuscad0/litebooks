@@ -446,7 +446,8 @@ def get_company_dashboard(company_id: UUID, auth: CurrentAuth) -> dict[str, Any]
         raise
 
     except Exception as exc:
-        logger.error("dashboard failed: %r", exc)
+        import logging
+        logging.getLogger("uvicorn.error").exception("Dashboard failed")
         raise HTTPException(status_code=502, detail="Could not load the company dashboard.") from exc
 
 
