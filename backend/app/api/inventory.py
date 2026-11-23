@@ -167,10 +167,18 @@ class ProductResponse(BaseModel):
 
 class StockMovementCreate(BaseModel):
     product_id: UUID
-    movement_type: Literal["opening_stock", "adjustment_in", "adjustment_out"]
+    movement_type: Literal[
+        "opening_stock",
+        "adjustment_in",
+        "adjustment_out",
+    ]
     movement_date: date
     quantity: float = Field(gt=0)
-    unit_cost: float = Field(ge=0)
+
+    # Required for opening stock and adjustment-in.
+    # Ignored and recalculated by PostgreSQL for adjustment-out.
+    unit_cost: float | None = Field(default=None, ge=0)
+
     notes: str | None = Field(default=None, max_length=10000)
 
     @field_validator("notes", mode="before")
@@ -224,28 +232,72 @@ def _ensure_valid_unit(client: Any, company_id: UUID, unit_id: UUID | None) -> N
 
 
 @router.get("/companies/{company_id}/summary")
-def get_inventory_summary(company_id: UUID, auth: CurrentAuth) -> dict[str, Any]:
+def get_inventory_summary(
+    company_id: UUID,
+    auth: CurrentAuth,
+) -> dict[str, Any]:
     user, client = auth
     _require_company_access(client, user["id"], company_id)
     try:
-        product_count = client.table("products").select("id", count="exact").eq("company_id", str(company_id)).execute()
-        category_count = client.table("categories").select("id", count="exact").eq("company_id", str(company_id)).execute()
-        unit_count = client.table("unit_of_measures").select("id", count="exact").eq("company_id", str(company_id)).execute()
-        active_products = client.table("products").select("id", count="exact").eq("company_id", str(company_id)).eq("is_active", True).execute()
-        total_value = client.table("products").select("selling_price").eq("company_id", str(company_id)).execute()
-        total = sum(float(row.get("selling_price") or 0) for row in (total_value.data or []))
+        product_count = (
+            client.table("products")
+            .select("id", count="exact")
+            .eq("company_id", str(company_id))
+            .execute()
+        )
+
+        category_count = (
+            client.table("categories")
+            .select("id", count="exact")
+            .eq("company_id", str(company_id))
+            .execute()
+        )
+
+        unit_count = (
+            client.table("unit_of_measures")
+            .select("id", count="exact")
+            .eq("company_id", str(company_id))
+            .execute()
+        )
+
+        active_products = (
+            client.table("products")
+            .select("id", count="exact")
+            .eq("company_id", str(company_id))
+            .eq("is_active", True)
+            .execute()
+        )
+
+        # Obtain actual inventory carrying value from PostgreSQL.
+        valuation_result = client.rpc(
+            "get_inventory_valuation",
+            {
+                "p_company_id": str(company_id),
+            },
+        ).execute()
+
+        total_inventory_value = float(
+            valuation_result.data or 0
+        )
+
         return {
             "company_id": str(company_id),
             "product_count": product_count.count or 0,
             "category_count": category_count.count or 0,
             "unit_count": unit_count.count or 0,
             "active_product_count": active_products.count or 0,
-            "total_inventory_value": round(total, 2),
+            "total_inventory_value": round(
+                total_inventory_value,
+                2,
+            ),
         }
     except HTTPException:
         raise
     except Exception as exc:
-        raise HTTPException(status_code=502, detail="Could not load inventory summary.") from exc
+        raise HTTPException(
+            status_code=502,
+            detail="Could not load inventory summary.",
+        ) from exc
 
 
 @router.get("/companies/{company_id}/categories", response_model=list[CategoryResponse])
