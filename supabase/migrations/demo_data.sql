@@ -13,6 +13,8 @@
 -- To start over, delete the demo company's rows (see bottom of file).
 -- ============================================================
 
+
+
 -- Helper (session-only): create and post a balanced journal entry.
 CREATE OR REPLACE FUNCTION pg_temp.post_je(
     p_company UUID, p_number TEXT, p_date DATE, p_desc TEXT,
@@ -54,7 +56,7 @@ $f$;
 
 DO $$
 DECLARE
-    v_owner_email  CONSTANT TEXT := 'CHANGE_ME@example.com';   -- <<< EDIT THIS
+    v_owner_email  CONSTANT TEXT := 'geo_nightlord@yahoo.com.ph';   -- <<< EDIT THIS
     v_company_code CONSTANT TEXT := 'DEMO001';
 
     v_owner_id     UUID;
