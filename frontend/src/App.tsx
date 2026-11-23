@@ -13,6 +13,7 @@ import AccountProfile from './pages/account/AccountProfile'
 import InventoryPage from './pages/inventory/InventoryPage'
 import ContactsPage from './pages/contacts/ContactsPage'
 import PurchasesPage from './pages/purchases/PurchasesPage'
+import './modules.css'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 1, staleTime: 30_000 } } })
 

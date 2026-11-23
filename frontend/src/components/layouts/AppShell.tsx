@@ -56,7 +56,7 @@ export default function AppShell() {
   return <div className="min-h-screen bg-slate-50 text-slate-900">
     {open && <button type="button" aria-label="Close menu overlay" className="fixed inset-0 z-30 bg-slate-900/50 lg:hidden" onClick={() => setOpen(false)} />}
 
-    <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-indigo-950 transition-transform duration-200 lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
+    <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-indigo-950 transition-transform duration-200 lg:translate-x-0 [&_a]:no-underline ${open ? 'translate-x-0' : '-translate-x-full'}`}>
       <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
         <Link to="/companies" className="font-display text-lg font-extrabold tracking-widest text-white">LITE<span className="text-indigo-400">BOOKS</span></Link>
         <button type="button" className="text-indigo-200 lg:hidden" onClick={() => setOpen(false)} aria-label="Close menu"><X size={20} /></button>

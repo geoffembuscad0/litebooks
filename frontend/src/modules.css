@@ -1,0 +1,45 @@
+/* Layout for Inventory / Contacts / Purchases pages (indigo, responsive) */
+@layer components {
+  .page-heading { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+  .page-heading h1 { margin: 0 0 .25rem; font-size: 1.875rem; font-weight: 800; letter-spacing: -.02em; }
+  .page-heading p { margin: 0; color: #64748b; font-size: .875rem; }
+  @media (min-width: 640px) {
+    .page-heading { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+  }
+
+  /* Cards */
+  .panel { min-width: 0; margin-bottom: 1.5rem; padding: 1.25rem; background: #fff; border: 1px solid #e2e8f0; border-radius: .75rem; box-shadow: 0 1px 2px rgb(15 23 42 / .05); }
+  @media (min-width: 640px) { .panel { padding: 1.5rem; } }
+  .panel h2 { margin: 0 0 .25rem; font-size: 1.0625rem; font-weight: 700; }
+  .panel > p { margin: 0 0 1rem; color: #64748b; font-size: .875rem; }
+  .panel-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
+
+  /* Metric cards: 2 per row on tablet, more when there is room */
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .metric-card { min-width: 0; padding: 1.25rem; background: #fff; border: 1px solid #e2e8f0; border-radius: .75rem; box-shadow: 0 1px 2px rgb(15 23 42 / .05); }
+  .metric-card > * { display: block; margin: 0; }
+  .metric-card strong { margin: .25rem 0; font-size: 1.5rem; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .metric-card p, .metric-card small, .metric-card span { color: #64748b; font-size: .8125rem; }
+
+  /* Forms: auto-fit grid, 1 column on phones, 2-3 on tablet */
+  :is(form.panel, .panel form) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem 1.25rem; align-items: end; }
+  :is(form.panel, .panel form) > :is(h1, h2, h3, p, .panel-heading, .alert, .span-two, label:has(textarea)) { grid-column: 1 / -1; }
+  :is(form.panel, .panel form) label { display: grid; gap: .375rem; min-width: 0; color: #334155; font-size: .8125rem; font-weight: 600; }
+  :is(form.panel, .panel form) :is(input, select, textarea) { width: 96%; min-height: 1.5rem; padding: .5rem .75rem; color: #1e1b4b; font-size: .875rem; font-weight: 400; background: #fff; border: 1px solid #cbd5e1; border-radius: .5rem; box-shadow: 0 1px 2px rgb(15 23 42 / .04); }
+  :is(form.panel, .panel form) textarea { min-height: 5rem; resize: vertical; }
+  :is(form.panel, .panel form) :is(input, select, textarea):focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgb(99 102 241 / .2); }
+  :is(form.panel, .panel form) :is(input, select, textarea)::placeholder { color: #94a3b8; }
+  :is(form.panel, .panel form) button:not(.text-button) { min-height: 1.5rem; padding: 0 1.25rem; color: #fff; font-size: .875rem; font-weight: 600; background: #4f46e5; border: 0; border-radius: .5rem; cursor: pointer; transition: background .15s; }
+  :is(form.panel, .panel form) button:not(.text-button):hover:not(:disabled) { background: #4338ca; }
+  :is(form.panel, .panel form) button:disabled { opacity: .6; cursor: wait; }
+  @media (max-width: 639px) { :is(form.panel, .panel form) button:not(.text-button) { width: 100%; } }
+  @media (min-width: 640px) { :is(form.panel, .panel form) > button { justify-self: start; } }
+
+  /* Tables scroll inside their card instead of the page */
+  .table-wrap { overflow-x: auto; }
+  .panel table { width: 100%; min-width: 640px; border-collapse: collapse; text-align: left; }
+  .panel th { padding: .75rem 1rem; color: #64748b; font-size: .6875rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; background: #f8fafc; }
+  .panel td { padding: .875rem 1rem; color: #475569; font-size: .875rem; white-space: nowrap; border-top: 1px solid #f1f5f9; }
+  .panel tbody tr:hover { background: #f8fafc; }
+  .align-right { text-align: right; }
+}
