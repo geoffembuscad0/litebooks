@@ -476,7 +476,6 @@ def create_stock_movement(
                 "p_quantity": payload.quantity,
                 "p_unit_cost": payload.unit_cost,
                 "p_notes": payload.notes,
-                "p_created_by": user["id"],
             },
         ).execute()
         if not result.data:

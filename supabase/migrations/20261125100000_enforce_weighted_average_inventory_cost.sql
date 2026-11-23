@@ -20,8 +20,8 @@ DECLARE
     v_product RECORD;
     v_movement RECORD;
 
-    v_stock_quantity NUMERIC(20, 6);
-    v_inventory_value NUMERIC(20, 6);
+    v_stock_quantity NUMERIC(20, 4);
+    v_inventory_value NUMERIC(24, 8);
     v_average_cost NUMERIC(15, 4);
 BEGIN
     FOR v_product IN

@@ -122,8 +122,7 @@ def create_purchase(
                 "p_due_date": payload.due_date.isoformat() if payload.due_date else None,
                 "p_reference_number": payload.reference_number,
                 "p_notes": payload.notes,
-                "p_items": [item.model_dump(mode="json") for item in payload.items],
-                "p_created_by": user["id"],
+                "p_items": [item.model_dump(mode="json") for item in payload.items]
             },
         ).execute()
         if not result.data:

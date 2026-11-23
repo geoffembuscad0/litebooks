@@ -5,6 +5,7 @@ from app.api.auth import router as auth_router
 from app.api.companies import router as companies_router
 from app.api.contacts import router as contacts_router
 from app.api.inventory import router as inventory_router
+from app.api.purchases import router as purchases_router
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -25,6 +26,7 @@ app.include_router(auth_router)
 app.include_router(companies_router)
 app.include_router(inventory_router)
 app.include_router(contacts_router)
+app.include_router(purchases_router)
 
 
 @app.get("/")
