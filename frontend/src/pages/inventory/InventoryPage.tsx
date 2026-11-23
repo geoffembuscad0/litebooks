@@ -1,6 +1,6 @@
 import { useMemo, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { companyService } from '../../services/companyService'
 import { inventoryService, type Product } from '../../services/inventoryService'
@@ -9,7 +9,7 @@ const money = (amount: number) => new Intl.NumberFormat(undefined, { style: 'cur
 
 export default function InventoryPage() {
   const { companyId } = useParams()
-  const { session, user, signOut } = useAuth()
+  const { session, user } = useAuth()
   const queryClient = useQueryClient()
   const companies = useQuery({ queryKey: ['companies', user?.id], queryFn: () => companyService.list(session!.access_token), enabled: Boolean(session) })
   const company = useMemo(() => companies.data?.find(item => item.id === companyId), [companies.data, companyId])
