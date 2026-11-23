@@ -74,13 +74,8 @@ export default function ContactsPage() {
   const items = contacts.data ?? []
   const initial = editing ?? emptyForm()
 
-  return <main className="app-shell">
-    <header className="topbar">
-      <Link className="brand" to="/companies">LITE<span>BOOKS</span></Link>
-      <nav className="top-nav"><Link className="nav-link" to={`/company/${company.id}`}>Dashboard</Link><Link className="nav-link" to={`/company/${company.id}/inventory`}>Inventory</Link><Link className="nav-link active" to={`/company/${company.id}/contacts`}>Contacts</Link><Link className="nav-link" to={`/company/${company.id}/settings`}>Company settings</Link></nav>
-      <div className="user-actions"><Link className="nav-link" to="/companies">Switch company</Link><button className="text-button" onClick={() => void signOut()}>Sign out</button></div>
-    </header>
-    <section className="dashboard-content">
+  return <div className="app-shell">
+    <div className="dashboard-content">
       <div className="page-heading"><div><p className="eyebrow">CUSTOMERS & SUPPLIERS</p><h1>{company.company_name} contacts</h1><p className="muted">Keep your customer and supplier details organized in this company workspace.</p></div></div>
       <form className="panel contacts-editor" onSubmit={submit}>
         <div className="panel-heading"><div><h2>{editing ? 'Edit contact' : 'Add a contact'}</h2><p>Choose at least one role: customer, supplier, or both.</p></div>{editing && <button className="text-button" type="button" onClick={() => { setEditing(null); setMessage('') }}>Cancel edit</button>}</div>
@@ -107,6 +102,6 @@ export default function ContactsPage() {
         </div>
         {contacts.isPending ? <div className="loading-panel">Loading contacts…</div> : contacts.isError ? <div className="alert error" role="alert">{contacts.error.message}<button className="text-button" onClick={() => void contacts.refetch()}>Try again</button></div> : items.length ? <div className="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th>Contact person</th><th>Email / phone</th><th>Status</th><th>Actions</th></tr></thead><tbody>{items.map(contact => <tr key={contact.id}><td className="transaction-name">{contact.name}</td><td>{[contact.is_customer && 'Customer', contact.is_supplier && 'Supplier'].filter(Boolean).join(' · ')}</td><td>{contact.contact_person ?? '—'}</td><td>{contact.email ?? contact.phone ?? '—'}</td><td><span className={`status-pill ${contact.is_active ? '' : 'status-inactive'}`}>{contact.is_active ? 'Active' : 'Inactive'}</span></td><td><div className="contact-actions"><button className="text-button" onClick={() => startEdit(contact)}>Edit</button><button className="text-button" onClick={() => toggleActive(contact)}>{contact.is_active ? 'Deactivate' : 'Activate'}</button></div></td></tr>)}</tbody></table></div> : <div className="empty-state"><span className="empty-symbol">＋</span><h3>No contacts found</h3><p>Create a contact or adjust the search and role filters.</p></div>}
       </section>
-    </section>
-  </main>
+    </div>
+  </div>
 }

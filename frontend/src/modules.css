@@ -21,19 +21,36 @@
   .metric-card strong { margin: .25rem 0; font-size: 1.5rem; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .metric-card p, .metric-card small, .metric-card span { color: #64748b; font-size: .8125rem; }
 
-  /* Forms: auto-fit grid, 1 column on phones, 2-3 on tablet */
-  :is(form.panel, .panel form) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem 1.25rem; align-items: end; }
-  :is(form.panel, .panel form) > :is(h1, h2, h3, p, .panel-heading, .alert, .span-two, label:has(textarea)) { grid-column: 1 / -1; }
+  :is(form.panel, .panel form) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem 1.25rem;
+    align-items: start;
+  }
+  @media (min-width: 640px)  { :is(form.panel, .panel form) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1024px) { :is(form.panel, .panel form) { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+  /* Always full row: headings, notes, alerts, textareas, line-item tables, action buttons */
+  :is(form.panel, .panel form) > :is(h1, h2, h3, p, fieldset, table, .table-wrap, .panel-heading, .alert, .span-two, .form-actions, button, label:has(textarea)) {
+    grid-column: 1 / -1;
+  }
+
   :is(form.panel, .panel form) label { display: grid; gap: .375rem; min-width: 0; color: #334155; font-size: .8125rem; font-weight: 600; }
-  :is(form.panel, .panel form) :is(input, select, textarea) { width: 96%; min-height: 1.5rem; padding: .5rem .75rem; color: #1e1b4b; font-size: .875rem; font-weight: 400; background: #fff; border: 1px solid #cbd5e1; border-radius: .5rem; box-shadow: 0 1px 2px rgb(15 23 42 / .04); }
+  :is(form.panel, .panel form) :is(input, select, textarea) { width: 100%; min-height: 1.5rem; padding: .5rem .75rem; color: #1e1b4b; font-size: .875rem; font-weight: 400; background: #fff; border: 1px solid #cbd5e1; border-radius: .5rem; box-shadow: 0 1px 2px rgb(15 23 42 / .04); }
   :is(form.panel, .panel form) textarea { min-height: 5rem; resize: vertical; }
   :is(form.panel, .panel form) :is(input, select, textarea):focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgb(99 102 241 / .2); }
   :is(form.panel, .panel form) :is(input, select, textarea)::placeholder { color: #94a3b8; }
+  :is(form.panel, .panel form) small { color: #94a3b8; font-size: .75rem; font-weight: 400; }
+
   :is(form.panel, .panel form) button:not(.text-button) { min-height: 1.5rem; padding: 0 1.25rem; color: #fff; font-size: .875rem; font-weight: 600; background: #4f46e5; border: 0; border-radius: .5rem; cursor: pointer; transition: background .15s; }
   :is(form.panel, .panel form) button:not(.text-button):hover:not(:disabled) { background: #4338ca; }
   :is(form.panel, .panel form) button:disabled { opacity: .6; cursor: wait; }
-  @media (max-width: 639px) { :is(form.panel, .panel form) button:not(.text-button) { width: 100%; } }
+  :is(form.panel, .panel form) > button { justify-self: stretch; }
   @media (min-width: 640px) { :is(form.panel, .panel form) > button { justify-self: start; } }
+
+  /* Several buttons side by side (Save + Cancel): wrap them in <div className="form-actions"> */
+  .form-actions { display: flex; flex-direction: column; gap: .75rem; }
+  @media (min-width: 640px) { .form-actions { flex-direction: row; justify-content: flex-end; } }
 
   /* Tables scroll inside their card instead of the page */
   .table-wrap { overflow-x: auto; }

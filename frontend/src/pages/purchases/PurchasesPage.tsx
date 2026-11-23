@@ -112,22 +112,9 @@ export default function PurchasesPage() {
     })
   }
 
-  return <main className="app-shell">
-    <header className="topbar">
-      <Link className="brand" to="/companies">LITE<span>BOOKS</span></Link>
-      <nav className="top-nav">
-        <Link className="nav-link" to={`/company/${company.id}`}>Dashboard</Link>
-        <Link className="nav-link" to={`/company/${company.id}/inventory`}>Inventory</Link>
-        <Link className="nav-link active" to={`/company/${company.id}/purchases`}>Purchases</Link>
-        <Link className="nav-link" to={`/company/${company.id}/contacts`}>Contacts</Link>
-      </nav>
-      <div className="user-actions">
-        <Link className="nav-link" to="/companies">Switch company</Link>
-        <button className="text-button" onClick={() => void signOut()}>Sign out</button>
-      </div>
-    </header>
+  return <div className="app-shell">
 
-    <section className="dashboard-content">
+    <div className="dashboard-content">
       <div className="page-heading">
         <div>
           <p className="eyebrow">PURCHASES</p>
@@ -219,6 +206,6 @@ export default function PurchasesPage() {
           </table>
         </div>
       </section>
-    </section>
-  </main>
+    </div>
+  </div>
 }
