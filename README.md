@@ -1,93 +1,70 @@
 # LiteBooks
 
-LiteBooks is a lightweight, multi-company Inventory and Accounting
-Management System. It is being developed to help small businesses
-organize their products, monitor stock, record everyday business
-transactions, and understand their financial position without the
-complexity of a large enterprise accounting platform.
+LiteBooks is a lightweight, multi-company Inventory and Accounting Management System for small businesses. It brings product and stock management together with purchasing and core accounting foundations, with the goal of making everyday business records easier to maintain and understand.
 
-The project is being built as a full-stack web application with **React,
-TypeScript, FastAPI, and Supabase**.
+The application is being developed as a full-stack web application using **React, TypeScript, FastAPI, and Supabase**.
+
+> **Development status:** LiteBooks is actively under development. The core project setup, company-scoped data foundation, authentication and company workflows, inventory management, purchasing foundations, and important inventory-costing safeguards are in place. Features are still being refined; this is not yet a production-ready accounting system.
 
 ## Project goals
 
-LiteBooks aims to provide a straightforward place to:
+LiteBooks aims to provide a straightforward way to:
 
--   Maintain product, category, and unit-of-measure records.
--   Track inventory coming in and going out.
--   Record purchases, sales, expenses, and payments.
--   Maintain a company-specific Chart of Accounts.
--   Record accounting activity using double-entry bookkeeping.
--   View useful financial reports, including Profit and Loss and Balance
-    Sheet.
--   Manage more than one company under a single user account.
+- Manage multiple companies under one user account.
+- Maintain product, category, and unit-of-measure records.
+- Track inventory movements and stock on hand.
+- Record purchases and maintain supplier and customer contacts.
+- Value inventory using perpetual weighted-average costing.
+- Build company-specific accounting records using double-entry bookkeeping.
+- Provide useful business and financial summaries as the application develops.
 
-The initial focus is on reliable inventory records and understandable
-financial reporting. LiteBooks is not intended to reproduce every
-feature of a full enterprise accounting suite.
+See [Documentation.md](Documentation.md) for the broader feature descriptions, business workflows, and accounting concepts.
 
-## Planned modules
+## Current implementation
 
-  -----------------------------------------------------------------------
-  Module                              Purpose
-  ----------------------------------- -----------------------------------
-  Dashboard                           Show an overview of inventory,
-                                      sales, expenses, and financial
-                                      performance.
+The repository currently contains the following foundations:
 
-  Account Management                  Support sign-in, user profile, and
-                                      account settings.
+- **Application structure:** React/TypeScript frontend and FastAPI backend.
+- **Authentication and company scope:** account-related endpoints, company creation and management, and company-scoped data access foundations.
+- **Inventory:** categories, units of measure, products, inventory movement records, and inventory API workflows.
+- **Purchasing:** purchase API and database workflow foundations.
+- **Contacts:** company-scoped customer and supplier records.
+- **Database safeguards:** PostgreSQL constraints, functions, triggers, and Row Level Security policies across the implemented schema.
+- **Accounting foundation:** company Chart of Accounts setup, journal-entry and journal-line structures, and double-entry/period-control safeguards.
+- **Inventory costing:** perpetual weighted-average costing and safeguards around inventory movement records.
 
-  Company Management                  Allow a user to create, edit, and
-                                      switch between their companies.
-
-  Inventory                           Manage products, categories, units
-                                      of measure, stock movements, and
-                                      stock valuation.
-
-  Contacts                            Maintain customer and supplier
-                                      records.
-
-  Transactions                        Record purchases, sales, operating
-                                      expenses, and payments.
-
-  Accounting                          Manage the Chart of Accounts,
-                                      journal entries, and the General
-                                      Ledger.
-
-  Financial Reports                   Present the Profit and Loss
-                                      Statement, Balance Sheet, and other
-                                      useful summaries.
-  -----------------------------------------------------------------------
+The frontend and backend are still being developed together. Sales, expenses, payments, broader accounting workflows, and financial reports remain part of the ongoing implementation plan. Refer to the source code and [Documentation.md](Documentation.md) for the current scope; planned features should not be assumed to be complete.
 
 ## Technology stack
 
 ### Frontend
 
--   React
--   TypeScript
--   Vite
--   React Router
--   TanStack Query
--   Supabase JavaScript client
+- React
+- TypeScript
+- Vite
+- React Router
+- TanStack Query
+- Supabase JavaScript client
 
 ### Backend
 
--   Python
--   FastAPI
--   Pydantic
--   Supabase Python client
+- Python
+- FastAPI
+- Pydantic
+- Pydantic Settings
+- Supabase Python client
 
 ### Database and services
 
--   Supabase
--   PostgreSQL
--   Supabase Auth
--   PostgreSQL Row Level Security (RLS)
+- Supabase
+- PostgreSQL
+- Supabase Auth
+- PostgreSQL Row Level Security (RLS)
+- Supabase CLI for database migrations
 
 ## High-level architecture
 
-``` text
+```text
 User
  |
  v
@@ -97,234 +74,268 @@ React + TypeScript frontend
  v
 FastAPI backend
  |
- | Authenticated database operations
+ | Authenticated application/database operations
  v
 Supabase / PostgreSQL
  |
- +-- User profiles
- +-- Companies
- +-- Inventory records
+ +-- User profiles and companies
+ +-- Products, categories, and units of measure
  +-- Contacts
- +-- Transactions and payments
- +-- Journal entries and lines
+ +-- Purchases and inventory movements
+ +-- Chart of Accounts and journal records
 ```
 
-The frontend is responsible for the user interface and user experience.
-FastAPI handles application workflows and business rules. Supabase
-provides authentication and PostgreSQL database services.
+The frontend handles the user interface and communicates with the FastAPI backend for application workflows. FastAPI applies business rules and verifies that the signed-in user is authorized to access the requested company. Supabase provides authentication and PostgreSQL database services.
 
-The backend must verify that the signed-in user is authorized to access
-the requested company. A company ID supplied by the browser must never
-be treated as proof of permission. Row Level Security will provide an
-additional database-level protection layer.
-
-## Multi-company approach
-
-A user may own multiple companies. Each company has its own products,
-contacts, transactions, accounts, inventory movements, and accounting
-records.
-
-After signing in, the user selects the company they want to work with.
-The selected company becomes the context for the application's business
-screens. Switching companies changes the data being displayed.
-
-Company-owned records contain a `company_id`. Database relationships are
-designed to prevent records from one company from being linked
-accidentally to another company's records.
-
-The initial ownership model is owner-only. Team membership and
-invitations may be considered in a later version.
-
-## Inventory and accounting principles
-
--   Product stock is derived from inventory movement records rather than
-    maintained as an independently editable quantity on the product
-    record.
--   The planned inventory valuation method is perpetual weighted average
-    cost.
--   Monetary values use PostgreSQL `NUMERIC` types rather than
-    floating-point types.
--   Accounting activity is recorded using journal entries and journal
-    lines.
--   Every posted journal entry must have equal total debits and credits.
--   Posted accounting records should be corrected through reversing or
-    compensating entries rather than silently edited.
--   Financial reports should be derived from posted accounting records,
-    not from manually maintained report totals.
-
-## Development status
-
-The project is in its foundational database-design stage.
-
-The database schema has been designed in batches covering:
-
-1.  User profiles and companies
-2.  Categories, units of measure, and products
-3.  Contacts and Chart of Accounts
-4.  Transactions, transaction items, and payments
-5.  Inventory movements
-6.  Journal entries and journal lines
-
-The Supabase CLI dry-run validation has been reported successful through
-Batch 6. A successful dry run previews the migration; it does not by
-itself confirm that the migration has been applied to the hosted
-database.
-
-Next planned work includes database helper functions and triggers,
-default Chart of Accounts setup, Row Level Security policies, and the
-application workflows that connect transactions to inventory and
-accounting records.
+A company ID supplied by the browser must never be treated as proof of permission. Company ownership checks in the backend and database-level Row Level Security provide separate layers of protection.
 
 ## Local development setup
 
-The following steps describe the current local development arrangement.
-Exact package versions may change as the project evolves.
+These instructions assume Ubuntu or another Linux environment. Run the frontend and backend in separate terminal windows.
 
 ### Prerequisites
 
--   Git
--   Node.js LTS and npm
--   Python 3
--   A Supabase project
--   Supabase CLI
+- Git
+- Node.js and npm
+- Python 3
+- A Supabase project
+- Supabase CLI (the commands below use `npx supabase`)
 
 ### 1. Clone the repository
 
-``` bash
-git clone <your-repository-url>
-cd LiteBooks
+```bash
+git clone https://github.com/geoffembuscad0/litebooks.git
+cd litebooks
 ```
 
-### 2. Set up the frontend
+### 2. Configure the frontend
 
-``` bash
+The frontend is located in `frontend/`.
+
+```bash
+cd frontend
 npm install
+cp .env.example .env
+```
+
+Update `frontend/.env` with the values from your Supabase project and local backend:
+
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+VITE_API_URL=http://127.0.0.1:8000
+```
+
+Start the Vite development server:
+
+```bash
 npm run dev
 ```
 
-The Vite development server normally runs at:
+The frontend normally runs at:
 
-``` text
+```text
 http://localhost:5173
 ```
 
-### 3. Set up the backend
+### 3. Configure and run the FastAPI backend
 
-``` bash
+The Python backend is located in `backend/`. The virtual environment is used for the backend only.
+
+Open another terminal from the repository root:
+
+```bash
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
-pip install "fastapi[standard]" supabase pydantic-settings python-dotenv
+pip install -r requirements.txt
+cp .env.example .env
 ```
 
-Start the API:
+Update `backend/.env` with your Supabase project values:
 
-``` bash
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-supabase-anon-key
+FRONTEND_ORIGINS=http://localhost:5173
+```
+
+With the virtual environment activated and the current directory set to `backend/`, start FastAPI:
+
+```bash
 fastapi dev app/main.py
 ```
 
 The API normally runs at:
 
-``` text
+```text
 http://127.0.0.1:8000
 ```
 
-Interactive API documentation is available at:
+Interactive API documentation:
 
-``` text
+```text
 http://127.0.0.1:8000/docs
 ```
 
-### 4. Configure Supabase
+To stop the backend, press `Ctrl+C`. To leave the Python virtual environment, run:
 
-Create the required environment files based on the project's current
-configuration. Keep credentials and secret keys out of source control.
+```bash
+deactivate
+```
 
-Typical configuration values include:
+Whenever you open a new terminal to run the backend, activate the environment again from the `backend/` directory:
 
--   Supabase project URL
--   Supabase publishable/anonymous key for the frontend, as appropriate
--   Supabase URL and server-side credentials for the backend
--   Any application-specific environment settings
+```bash
+source .venv/bin/activate
+```
 
-Never expose a Supabase service-role key in frontend code or commit it
-to Git.
+### 4. Supabase CLI setup
 
-### 5. Run database migrations
+Run Supabase CLI commands from the **repository root**, where the `supabase/` directory is located.
 
-The project uses Supabase CLI migrations in `supabase/migrations/`.
+Log in to the CLI:
 
-Create a migration:
+```bash
+npx supabase login
+```
 
-``` bash
+Link the local repository to your hosted Supabase project. Replace the placeholder with the project reference shown in your Supabase Dashboard URL:
+
+```bash
+npx supabase link --project-ref <your-project-ref>
+```
+
+Linking is normally a one-time setup for this local repository. If you work with multiple Supabase projects, verify the linked project before running any remote database command.
+
+## Database migrations
+
+LiteBooks uses timestamped SQL migration files stored in `supabase/migrations/`. Treat these files as the source of truth for the database schema and database-side logic.
+
+### Create a migration
+
+From the repository root:
+
+```bash
 npx supabase migration new descriptive_migration_name
 ```
 
-Preview pending remote migrations:
+Add the SQL changes to the generated file in `supabase/migrations/`. Use a new migration for each new database change. Avoid editing migrations that have already been applied to a shared remote database; create a follow-up migration instead.
 
-``` bash
+### Preview pending remote migrations
+
+Before applying changes to the hosted project, preview what the CLI intends to run:
+
+```bash
 npx supabase db push --dry-run --remote
 ```
 
-Apply pending migrations to the linked hosted project only after
-reviewing the preview:
+Review the migration list and SQL changes. Confirm that the linked project is the intended development project.
 
-``` bash
+### Push migrations to the hosted Supabase project
+
+After reviewing the dry run, apply pending migrations:
+
+```bash
 npx supabase db push --yes --remote
 ```
 
-Make sure the CLI is logged in and the project is linked before running
-remote migration commands. Review each migration carefully before
-applying it to a shared or production database.
+The CLI tracks applied migrations in the remote migration history and skips migrations that have already been applied. The `--yes` flag automatically confirms the operation, so use it only after checking the target project and reviewing the dry-run output.
+
+If you prefer to confirm interactively, omit `--yes`:
+
+```bash
+npx supabase db push --remote
+```
+
+### Reset the hosted development database
+
+> **WARNING: DESTRUCTIVE OPERATION.** A remote reset removes existing user-created database objects and data in the linked database, then rebuilds the database by replaying the local migrations and configured seed files. Existing application data will be lost. Use this only for a disposable development or staging project—not production.
+
+When you intentionally need to start the linked remote database over:
+
+```bash
+npx supabase db reset --remote
+```
+
+The CLI asks for confirmation before proceeding. Read the target information and confirm that it is the correct Supabase project before accepting. Do not add `--yes` unless you deliberately want to bypass that confirmation.
+
+To rebuild without running configured seed files:
+
+```bash
+npx supabase db reset --remote --no-seed
+```
+
+A remote reset is different from pushing migrations:
+
+- `npx supabase db push --remote` applies migrations that have not yet been applied. It does not wipe existing application data.
+- `npx supabase db reset --remote` is destructive: it clears user-created database objects/data in the linked remote database and replays the local migration history (and configured seed files unless `--no-seed` is used).
+
+A remote database reset does not delete the Supabase project itself. It is also not a replacement for reviewing project-level services and settings.
+
+### Recommended migration workflow
+
+For ordinary database changes, use this sequence:
+
+1. Create a new migration with `npx supabase migration new descriptive_migration_name`.
+2. Write and review the SQL in `supabase/migrations/`.
+3. Preview pending remote changes with `npx supabase db push --dry-run --remote`.
+4. Apply the reviewed migrations with `npx supabase db push --remote` (or `--yes --remote` when intentionally confirming).
+5. Commit the migration file to Git so the schema change is version-controlled.
+
+Use a remote reset only when you intentionally want to rebuild a development database from scratch.
 
 ## Repository structure
 
-The main project structure is expected to follow this arrangement:
+The main folders are organized as follows:
 
-``` text
-LiteBooks/
+```text
+litebooks/
 ├── backend/
 │   ├── app/
 │   │   ├── api/
 │   │   ├── core/
 │   │   ├── dependencies/
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── services/
 │   │   └── main.py
-│   └── .venv/
-├── src/
-│   └── ... frontend source
+│   ├── .env.example
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/
+│   │   ├── pages/
+│   │   └── services/
+│   ├── .env.example
+│   ├── package.json
+│   └── vite.config.ts
 ├── supabase/
-│   ├── migrations/
-│   └── config.toml
+│   └── migrations/
 ├── .gitignore
-├── package.json
 ├── README.md
 └── Documentation.md
 ```
 
-The actual structure may expand as features are implemented.
+The `.venv/`, `node_modules/`, build output, and environment files are local development files and should not be committed.
 
 ## Documentation
 
-See **[Documentation.md](Documentation.md)** for the planned features,
-plain-language workflows, and explanations of how common business
-activities move through the system.
+See [Documentation.md](Documentation.md) for:
+
+- Feature descriptions and planned capabilities.
+- Company, inventory, purchase, and accounting workflows.
+- Plain-language explanations of inventory costing and double-entry bookkeeping.
+- Development stages and future enhancements.
 
 ## Security reminders
 
--   Do not commit `.env` files, passwords, access tokens, or private
-    keys.
--   Do not place service-role credentials in browser code.
--   Validate user identity and company ownership in the backend.
--   Enable and test RLS policies before allowing direct client access to
-    protected tables.
--   Apply database migrations deliberately and keep backups appropriate
-    to the environment.
+- Never commit `.env` files, passwords, access tokens, or private keys.
+- Never expose a Supabase service-role key in frontend code.
+- Use only the appropriate public/publishable key in browser-side configuration.
+- Verify user identity and company ownership in the backend.
+- Keep Row Level Security enabled and review policies when adding tables.
+- Apply database changes through version-controlled migrations rather than making untracked schema changes directly in the hosted database.
+- Treat remote database resets as destructive and verify the linked project before running them.
 
 ## Project direction
 
-LiteBooks will be developed incrementally. The priority is to make
-core workflows dependable and easy to understand before adding advanced
-accounting, automation, or collaboration features.
+LiteBooks is being developed incrementally. The current priority is to make the core company, inventory, purchasing, and accounting foundations dependable before expanding into broader transaction workflows, financial reporting, and advanced features.
