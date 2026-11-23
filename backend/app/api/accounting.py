@@ -87,3 +87,34 @@ def get_profit_and_loss(
         raise
     except Exception as exc:
         raise HTTPException(status_code=502, detail="Could not generate the Profit & Loss report.") from exc
+
+
+@router.get("/balance-sheet")
+def get_balance_sheet(company_id: UUID, auth: CurrentAuth, as_of: date | None = None) -> dict[str, Any]:
+    user, client = auth
+    _require_company_owner(client, user["id"], company_id)
+    report_date = as_of or date.today()
+    try:
+        result = client.rpc("get_balance_sheet", {
+            "p_company_id": str(company_id),
+            "p_as_of": report_date.isoformat(),
+        }).execute()
+        if not result.data:
+            return {
+                "as_of": report_date.isoformat(),
+                "fiscal_year_start": None,
+                "assets": [],
+                "liabilities": [],
+                "equity": [],
+                "current_net_income": 0,
+                "total_assets": 0,
+                "total_liabilities": 0,
+                "total_equity": 0,
+                "total_liabilities_and_equity": 0,
+                "balance_difference": 0,
+            }
+        return result.data
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail="Could not generate the Balance Sheet.") from exc
